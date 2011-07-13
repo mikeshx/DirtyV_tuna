@@ -124,6 +124,9 @@ obj-$(CONFIG_GENERIC_STRNLEN_USER) += strnlen_user.o
 
 obj-$(CONFIG_CORDIC) += cordic.o
 
+obj-$(CONFIG_LLIST) += llist.o
+
+
 hostprogs-y	:= gen_crc32table
 clean-files	:= crc32table.h
 
