@@ -61,8 +61,9 @@ static DEFINE_MUTEX(thermal_domain_list_lock);
  * @cooling_agents: The domains list of available cooling agents
  *
  */
+#define MAX_DOMAIN_NAME_SZ	32
 struct thermal_domain {
-	const char *domain_name;
+	char domain_name[MAX_DOMAIN_NAME_SZ];
 	struct list_head node;
 	struct thermal_dev *temp_sensor;
 	struct thermal_dev *governor;
@@ -117,105 +118,35 @@ int thermal_sensor_set_temp(struct thermal_dev *tdev)
 		goto out;
 	}
 
-	list_for_each_entry(thermal_domain, &thermal_domain_list, node)
-		if (!strcmp(thermal_domain->domain_name, tdev->domain_name)) {
-			if (!thermal_domain->cooling_agents.next) {
-				pr_debug("%s:No cooling agents for domain %s\n",
-					__func__, thermal_domain->domain_name);
-				goto out;
-			}
+	thermal_domain = tdev->domain;
+	if (!thermal_domain) {
+		pr_err("%s: device not part of a domain\n", __func__);
+		goto out;
+	}
 
-			if (thermal_domain->governor &&
-			    thermal_domain->governor->dev_ops &&
-			    thermal_domain->governor->dev_ops->process_temp) {
-				thermal_domain->governor->dev_ops->process_temp
-					(&thermal_domain->cooling_agents,
-<<<<<<< HEAD
-						tdev, tdev->current_temp);
-=======
-					tdev, tdev->current_temp);
->>>>>>> 72f1c86... OMAP4 Thermal Framework: support multiple sensors per domain
-				ret = 0;
-				goto out;
-			} else {
-				pr_debug("%s:Gov did not have right function\n",
-					__func__);
-				goto out;
-			}
+	if (list_empty(&thermal_domain->cooling_agents)) {
+		pr_err("%s: no cooling agents for domain %s\n",
+			__func__, thermal_domain->domain_name);
+		goto out;
+	}
 
-		}
+	if (thermal_domain->governor &&
+			thermal_domain->governor->dev_ops &&
+			thermal_domain->governor->dev_ops->process_temp) {
+		thermal_domain->governor->dev_ops->process_temp
+			(&thermal_domain->cooling_agents,
+			 tdev, tdev->current_temp);
+		ret = 0;
+		goto out;
+	} else {
+		pr_debug("%s:Gov did not have right function\n",
+				__func__);
+		goto out;
+	}
 out:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(thermal_sensor_set_temp);
-
-/*
- * thermal_get_slope() - External API for the sensor driver to
- *					get the Slope
- *					for Hotspot temperature computation
- */
-int thermal_get_slope(struct thermal_dev *tdev)
-{
-	struct thermal_domain *thermal_domain;
-	int ret = -ENODEV;
-
-	if (list_empty(&thermal_domain_list))
-		pr_info("%s: No sensors registered\n", __func__);
-
-	list_for_each_entry(thermal_domain, &thermal_domain_list, node)
-		if (!strcmp(thermal_domain->domain_name, tdev->domain_name))
-			goto found;
-	pr_err("%s: Domain not found\n", __func__);
-	return ret;
-found:
-
-	if (thermal_domain->temp_sensor &&
-		thermal_domain->temp_sensor->dev_ops &&
-		thermal_domain->temp_sensor->dev_ops->init_slope) {
-		return thermal_domain->temp_sensor->dev_ops->init_slope
-			(thermal_domain->temp_sensor);
-		} else {
-			pr_err("%s:Getting slope is not supported for domain %s\n",
-				__func__, thermal_domain->domain_name);
-			return -EINVAL;
-		}
-
-	return -EINVAL;
-}
-EXPORT_SYMBOL_GPL(thermal_get_slope);
-
-/*
- * thermal_get_slope() - External API for the sensor driver to
- *                                      get the Slope
- *                                      for Hotspot temperature computation
- */
-int thermal_get_offset(struct thermal_dev *tdev)
-{
-	struct thermal_domain *thermal_domain;
-	int ret = -ENODEV;
-
-	if (list_empty(&thermal_domain_list))
-		pr_debug("%s: No sensors registered\n", __func__);
-	list_for_each_entry(thermal_domain, &thermal_domain_list, node)
-		if (!strcmp(thermal_domain->domain_name, tdev->domain_name))
-			goto found;
-	pr_err("%s: Domain not found\n", __func__);
-	return ret;
-found:
-	if (thermal_domain->temp_sensor &&
-		thermal_domain->temp_sensor->dev_ops &&
-		thermal_domain->temp_sensor->dev_ops->init_offset) {
-			return thermal_domain->temp_sensor->dev_ops->init_offset
-					(thermal_domain->temp_sensor);
-		} else {
-			pr_err("%s:Getting offset is not supported for domain %s\n",
-				__func__, thermal_domain->domain_name);
-			return -EINVAL;
-		}
-
-	return -EINVAL;
-}
-EXPORT_SYMBOL_GPL(thermal_get_offset);
 
 /**
  * thermal_request_temp() - Requests the thermal sensor to report it's current
@@ -237,26 +168,15 @@ int thermal_request_temp(struct thermal_dev *tdev)
 		return ret;
 	}
 
-	mutex_lock(&thermal_domain_list_lock);
-	list_for_each_entry(thermal_domain, &thermal_domain_list, node)
-		if (!strcmp(thermal_domain->domain_name, tdev->domain_name))
-			goto report;
-	mutex_unlock(&thermal_domain_list_lock);
-	pr_err("%s: Domain not found\n", __func__);
-	return ret;
-report:
-	mutex_unlock(&thermal_domain_list_lock);
-<<<<<<< HEAD
-	if (thermal_domain->temp_sensor &&
-	    thermal_domain->temp_sensor->dev_ops &&
-	    thermal_domain->temp_sensor->dev_ops->report_temp) {
-			ret = thermal_domain->temp_sensor->dev_ops->report_temp
-					(thermal_domain->temp_sensor);
-=======
+	thermal_domain = tdev->domain;
+	if (!thermal_domain) {
+		pr_err("%s: device not part of a domain\n", __func__);
+		return ret;
+	}
+
 	if (tdev->dev_ops &&
 	    tdev->dev_ops->report_temp) {
 			ret = tdev->dev_ops->report_temp(tdev);
->>>>>>> 72f1c86... OMAP4 Thermal Framework: support multiple sensors per domain
 	} else {
 		pr_err("%s:Getting temp is not supported for domain %s\n",
 			__func__, thermal_domain->domain_name);
@@ -287,8 +207,8 @@ int thermal_update_temp_thresholds(struct thermal_dev *temp_sensor,
 				min, max);
 			return 0;
 		} else
-			pr_err("%s:Updating temp thresholds is not supported for sensor %s\n",
-				__func__, temp_sensor->name);
+			pr_err("%s:Updating temp thresholds is not supported \
+				for sensor %s\n", __func__, temp_sensor->name);
 	} else
 		pr_err("%s:Temp sensor pointer is NULL\n", __func__);
 
@@ -342,14 +262,12 @@ static int thermal_init_thermal_state(struct thermal_dev *tdev)
 		return -ENODEV;
 	}
 
-	mutex_lock(&thermal_domain_list_lock);
-	list_for_each_entry(domain, &thermal_domain_list, node) {
-		if (!strcmp(domain->domain_name, tdev->domain_name))
-			goto check_domain;
+	domain = tdev->domain;
+	if (!domain) {
+		pr_err("%s: device not part of a domain\n", __func__);
+		return -ENODEV;
 	}
 
-check_domain:
-	mutex_unlock(&thermal_domain_list_lock);
 	if (domain->temp_sensor &&
 		domain->governor &&
 		domain->cooling_agents.next)
@@ -361,50 +279,70 @@ check_domain:
 	return 0;
 }
 
+static struct thermal_domain *thermal_domain_find(const char *name)
+{
+	struct thermal_domain *domain = NULL;
+
+	mutex_lock(&thermal_domain_list_lock);
+	if (list_empty(&thermal_domain_list))
+		goto out;
+	list_for_each_entry(domain, &thermal_domain_list, node)
+		if (!strcmp(domain->domain_name, name))
+			goto out;
+	/* Not found */
+	domain = NULL;
+out:
+	mutex_unlock(&thermal_domain_list_lock);
+
+	return domain;
+}
+
+static struct thermal_domain *thermal_domain_add(const char *name)
+{
+	struct thermal_domain *domain;
+
+	domain = kzalloc(sizeof(struct thermal_domain), GFP_KERNEL);
+	if (!domain) {
+		pr_err("%s: cannot allocate domain memory\n", __func__);
+		return NULL;
+	}
+
+	INIT_LIST_HEAD(&domain->cooling_agents);
+	strlcpy(domain->domain_name, name, sizeof(domain->domain_name));
+	mutex_lock(&thermal_domain_list_lock);
+	list_add(&domain->node, &thermal_domain_list);
+	mutex_unlock(&thermal_domain_list_lock);
+	pr_debug("%s: added thermal domain %s\n", __func__, name);
+
+	return domain;
+}
+
 /**
  * thermal_governor_dev_register() - Registration call for thermal domain governors
  *
  * @tdev: The thermal governor device structure.
  *
  * Returns 0 for a successful registration of the governor to a domain
- * ENOMEM if the domain could not be created.
+ * ENODEV if the domain could not be created.
  *
  */
 int thermal_governor_dev_register(struct thermal_dev *tdev)
 {
-	struct thermal_domain *therm_dom;
 	struct thermal_domain *domain;
 
-	if (list_empty(&thermal_domain_list)) {
-		goto init_governor;
-	} else {
-		mutex_lock(&thermal_domain_list_lock);
-		list_for_each_entry(domain, &thermal_domain_list, node) {
-			if (!strcmp(domain->domain_name, tdev->domain_name)) {
-				pr_debug("%s:Found %s\n", __func__,
-					domain->domain_name);
-				domain->governor = tdev;
-				goto out;
-			}
-		}
-		mutex_unlock(&thermal_domain_list_lock);
-	}
+	domain = thermal_domain_find(tdev->domain_name);
+	if (!domain)
+		domain = thermal_domain_add(tdev->domain_name);
 
-init_governor:
-	therm_dom = kzalloc(sizeof(struct thermal_domain), GFP_KERNEL);
-	if (!therm_dom) {
-		pr_err("%s:Cannot allocate domain memory\n", __func__);
-		return -ENOMEM;
-	}
+	if (unlikely(!domain))
+		return -ENODEV;
 
-	therm_dom->governor = tdev;
-	therm_dom->domain_name = tdev->domain_name;
-	pr_info("%s:Adding %s governor\n", __func__, tdev->name);
 	mutex_lock(&thermal_domain_list_lock);
-	list_add(&therm_dom->node, &thermal_domain_list);
-out:
+	domain->governor = tdev;
+	tdev->domain = domain;
 	mutex_unlock(&thermal_domain_list_lock);
 	thermal_init_thermal_state(tdev);
+	pr_debug("%s: added %s governor\n", __func__, tdev->name);
 
 	return 0;
 }
@@ -419,15 +357,11 @@ EXPORT_SYMBOL_GPL(thermal_governor_dev_register);
  */
 void thermal_governor_dev_unregister(struct thermal_dev *tdev)
 {
-	struct thermal_domain *domain;
-
 	mutex_lock(&thermal_domain_list_lock);
 
-	list_for_each_entry(domain, &thermal_domain_list, node) {
-		if (!strcmp(domain->domain_name, tdev->domain_name)) {
-			kfree(domain->governor);
-			domain->governor = NULL;
-		}
+	if (tdev->domain) {
+		kfree(tdev->domain->governor);
+		tdev->domain->governor = NULL;
 	}
 
 	mutex_unlock(&thermal_domain_list_lock);
@@ -441,47 +375,25 @@ EXPORT_SYMBOL_GPL(thermal_governor_dev_unregister);
  * @tdev: The cooling agent device structure.
  *
  * Returns 0 for a successful registration of a cooling agent to a domain
- * ENOMEM if the domain could not be created.
+ * ENODEV if the domain could not be created.
  */
 int thermal_cooling_dev_register(struct thermal_dev *tdev)
 {
-	struct thermal_domain *therm_dom;
 	struct thermal_domain *domain;
 
-	pr_debug("%s:Registering %s cooling device\n", __func__, tdev->name);
+	domain = thermal_domain_find(tdev->domain_name);
+	if (!domain)
+		domain = thermal_domain_add(tdev->domain_name);
 
-	if (list_empty(&thermal_domain_list)) {
-		goto init_cooling_agent;
-	} else {
-		mutex_lock(&thermal_domain_list_lock);
-		list_for_each_entry(domain, &thermal_domain_list, node) {
-			pr_debug("%s:Found %s %s\n", __func__,
-				domain->domain_name, tdev->domain_name);
-			if (!strcmp(domain->domain_name, tdev->domain_name)) {
-				if (!domain->cooling_agents.next)
-					INIT_LIST_HEAD(&domain->cooling_agents);
-				list_add(&tdev->node, &domain->cooling_agents);
-				goto out;
-			}
-		}
-		mutex_unlock(&thermal_domain_list_lock);
-	}
+	if (unlikely(!domain))
+		return -ENODEV;
 
-init_cooling_agent:
-	therm_dom = kzalloc(sizeof(struct thermal_domain), GFP_KERNEL);
-	if (!therm_dom) {
-		pr_err("%s:Cannot allocate domain memory\n", __func__);
-		return -ENOMEM;
-	}
-
-	therm_dom->domain_name = tdev->domain_name;
-	INIT_LIST_HEAD(&therm_dom->cooling_agents);
-	list_add(&tdev->node, &therm_dom->cooling_agents);
 	mutex_lock(&thermal_domain_list_lock);
-	list_add(&therm_dom->node, &thermal_domain_list);
-out:
+	list_add(&tdev->node, &domain->cooling_agents);
+	tdev->domain = domain;
 	mutex_unlock(&thermal_domain_list_lock);
 	thermal_init_thermal_state(tdev);
+	pr_debug("%s: added cooling agent %s\n", __func__, tdev->name);
 
 	return 0;
 }
@@ -495,14 +407,10 @@ EXPORT_SYMBOL_GPL(thermal_cooling_dev_register);
  */
 void thermal_cooling_dev_unregister(struct thermal_dev *tdev)
 {
-	struct thermal_domain *domain;
-
 	mutex_lock(&thermal_domain_list_lock);
 
-	list_for_each_entry(domain, &thermal_domain_list, node) {
-		if (!strcmp(domain->domain_name, tdev->domain_name))
-			list_del(domain->cooling_agents.next);
-	}
+	if (tdev->domain)
+		list_del(&tdev->node);
 
 	mutex_unlock(&thermal_domain_list_lock);
 	return;
@@ -515,48 +423,26 @@ EXPORT_SYMBOL_GPL(thermal_cooling_dev_unregister);
  * @tdev: The temperature device structure.
  *
  * Returns 0 for a successful registration of the temp sensor to a domain
- * ENOMEM if the domain could not be created.
+ * ENODEV if the domain could not be created.
  */
 int thermal_sensor_dev_register(struct thermal_dev *tdev)
 {
-	struct thermal_domain *therm_dom;
 	struct thermal_domain *domain;
 
-	if (list_empty(&thermal_domain_list)) {
-		pr_debug("%s:Need to init the %s domain\n",
-			__func__, tdev->domain_name);
-		goto init_sensor;
-	} else {
-		mutex_lock(&thermal_domain_list_lock);
-		list_for_each_entry(domain, &thermal_domain_list, node) {
-			pr_debug("%s:Found %s %s\n", __func__,
-				domain->domain_name, tdev->domain_name);
-			if (!strcmp(domain->domain_name, tdev->domain_name)) {
-				pr_info("%s:Adding %s sensor\n",
-					__func__, tdev->name);
-				domain->temp_sensor = tdev;
-				goto out;
-			}
-		}
-		mutex_unlock(&thermal_domain_list_lock);
-	}
+	domain = thermal_domain_find(tdev->domain_name);
+	if (!domain)
+		domain = thermal_domain_add(tdev->domain_name);
 
-init_sensor:
-	therm_dom = kzalloc(sizeof(struct thermal_domain),
-		GFP_KERNEL);
-	if (!therm_dom) {
-		pr_err("%s:Cannot allocate domain memory\n",
-			__func__);
-		return -ENOMEM;
-	}
-	therm_dom->temp_sensor = tdev;
-	therm_dom->domain_name = tdev->domain_name;
-	pr_debug("%s:Adding %s sensor\n", __func__, tdev->name);
+	if (unlikely(!domain))
+		return -ENODEV;
+
 	mutex_lock(&thermal_domain_list_lock);
-	list_add(&therm_dom->node, &thermal_domain_list);
-out:
+	domain->temp_sensor = tdev;
+	tdev->domain = domain;
 	mutex_unlock(&thermal_domain_list_lock);
 	thermal_init_thermal_state(tdev);
+	pr_debug("%s: added %s sensor\n", __func__, tdev->name);
+
 	return 0;
 }
 EXPORT_SYMBOL_GPL(thermal_sensor_dev_register);
@@ -569,15 +455,11 @@ EXPORT_SYMBOL_GPL(thermal_sensor_dev_register);
  */
 void thermal_sensor_dev_unregister(struct thermal_dev *tdev)
 {
-	struct thermal_domain *domain;
-
 	mutex_lock(&thermal_domain_list_lock);
 
-	list_for_each_entry(domain, &thermal_domain_list, node) {
-		if (!strcmp(domain->domain_name, tdev->domain_name)) {
-			kfree(domain->temp_sensor);
-			domain->temp_sensor = NULL;
-		}
+	if (tdev->domain) {
+		kfree(tdev->domain->temp_sensor);
+		tdev->domain->temp_sensor = NULL;
 	}
 
 	mutex_unlock(&thermal_domain_list_lock);
@@ -601,3 +483,4 @@ module_exit(thermal_framework_exit);
 MODULE_AUTHOR("Dan Murphy <DMurphy@ti.com>");
 MODULE_DESCRIPTION("Thermal Framework driver");
 MODULE_LICENSE("GPL");
+
