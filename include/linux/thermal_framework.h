@@ -40,8 +40,6 @@ struct thermal_dev_ops {
 	int (*set_temp_thresh) (struct thermal_dev *temp_sensor,
 			int min, int max);
 	int (*set_temp_report_rate) (struct thermal_dev *, int rate);
-	int (*init_slope) (struct thermal_dev *);
-	int (*init_offset) (struct thermal_dev *);
 	/* Cooling agent call backs */
 	int (*cool_device) (struct thermal_dev *, int temp);
 	/* Governor call backs */
@@ -67,11 +65,7 @@ struct thermal_dev {
 	struct device	*dev;
 	struct thermal_dev_ops *dev_ops;
 	struct list_head node;
-	int		index;
-	int		current_temp;
-	int		slope;
-	int		constant_offset;
-	int		sen_id;
+	int 		current_temp;
 
 };
 
@@ -79,8 +73,6 @@ extern int thermal_update_temp_thresholds(struct thermal_dev *temp_sensor,
 		int min, int max);
 extern int thermal_request_temp(struct thermal_dev *tdev);
 extern int thermal_sensor_set_temp(struct thermal_dev *tdev);
-extern int thermal_get_slope(struct thermal_dev *tdev);
-extern int thermal_get_offset(struct thermal_dev *tdev);
 extern int thermal_update_temp_rate(struct thermal_dev *temp_sensor, int rate);
 extern int thermal_cooling_set_level(struct list_head *cooling_list,
 		unsigned int level);
@@ -94,3 +86,4 @@ extern int thermal_governor_dev_register(struct thermal_dev *tdev);
 extern void thermal_governor_dev_unregister(struct thermal_dev *tdev);
 
 #endif /* __LINUX_THERMAL_FRAMEWORK_H__ */
+
