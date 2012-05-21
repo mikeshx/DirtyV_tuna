@@ -1423,6 +1423,7 @@ static void __init tuna_map_io(void)
 
 static void __init tuna_reserve(void)
 {
+	omap_init_ram_size();
 	int i;
 	int ret;
 
