@@ -1,10 +1,10 @@
-case $(basename $0) in
-offset)
+case $1 in
+  offset)
 	P=/sys/class/misc/colorcontrol/v1_offset
-	;;
-multiplier)
+  ;;
+  multiplier)
 	P=/sys/class/misc/colorcontrol/multiplier
-	;;
+  ;;
 esac
 
 read() {
@@ -37,12 +37,11 @@ write() {
 			COLORARR="$COLORARR $COLOR"
 		fi
 	done
-	[ "$P" == "/sys/class/misc/colorcontrol/multiplier" ] && echo 0 > /sys/devices/virtual/misc/colorcontrol/safety_enabled
 	echo $COLORARR > $P
 }
 
-if [[ ! -z $2 ]]; then
-        write $1 $2
+if [[ ! -z $3 ]]; then
+        write $2 $3
 fi
 
-echo $(read $1)
+echo $(read $2)

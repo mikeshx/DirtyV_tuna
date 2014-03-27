@@ -46,36 +46,36 @@ cpuwrite() {
 	echo $VOLTARR > $P
 }
 
-case $(basename $0) in
-cpuvolt)
+case $1 in
+  cpuvolt)
 	P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
-	if [[ ! -z $2 ]]; then
-		cpuwrite $1 $2
+	if [[ ! -z $3 ]]; then
+		cpuwrite $2 $3
 	fi
-	echo $(cpuread $1)
-	;;
+	echo $(cpuread $2)
+  ;;
 
-corevolt)
+  corevolt)
 	P=/sys/devices/virtual/misc/customvoltage/core_voltages
-	if [[ ! -z $2 ]]; then
-		corewrite $1 $2
+	if [[ ! -z $3 ]]; then
+		corewrite $2 $3
 	fi
-	echo $(coreread $1)
-	;;
+	echo $(coreread $2)
+  ;;
 
-ivavolt)
+  ivavolt)
 	P=/sys/devices/virtual/misc/customvoltage/iva_voltages
-	if [[ ! -z $2 ]]; then
-		corewrite $1 $2
+	if [[ ! -z $3 ]]; then
+		corewrite $2 $3
 	fi
-	echo $(coreread $1)
-	;;
+	echo $(coreread $2)
+  ;;
 
-regulatorvolt)
+  regulatorvolt)
 	P=/sys/devices/virtual/misc/customvoltage/regulator_voltages
-	if [[ ! -z $2 ]]; then
-		cpuwrite $1 $2
+	if [[ ! -z $3 ]]; then
+		cpuwrite $2 $3
 	fi
-	echo $(cpuread $1)
-	;;
+	echo $(cpuread $2)
+  ;;
 esac
