@@ -291,23 +291,23 @@ static struct ion_platform_data tuna_ion_data = {
 			.id   = OMAP_ION_HEAP_SECURE_INPUT,
 			.name = "secure_input",
 			.base = PHYS_ADDR_SMC_MEM -
-					OMAP_TUNA_ION_HEAP_SECURE_INPUT_SIZE,
-			.size = OMAP_TUNA_ION_HEAP_SECURE_INPUT_SIZE,
+					OMAP4_ION_HEAP_SECURE_INPUT_SIZE,
+			.size = OMAP4_ION_HEAP_SECURE_INPUT_SIZE,
 		},
 		{	.type = OMAP_ION_HEAP_TYPE_TILER,
 			.id   = OMAP_ION_HEAP_TILER,
 			.name = "tiler",
 			.base = PHYS_ADDR_DUCATI_MEM -
-					OMAP_TUNA_ION_HEAP_TILER_SIZE,
-			.size = OMAP_TUNA_ION_HEAP_TILER_SIZE,
+					OMAP4_ION_HEAP_TILER_SIZE,
+			.size = OMAP4_ION_HEAP_TILER_SIZE,
 		},
 		{	.type = OMAP_ION_HEAP_TYPE_TILER,
 			.id   = OMAP_ION_HEAP_NONSECURE_TILER,
 			.name = "nonsecure_tiler",
 			.base = PHYS_ADDR_DUCATI_MEM -
-					OMAP_TUNA_ION_HEAP_TILER_SIZE -
-					OMAP_TUNA_ION_HEAP_NONSECURE_TILER_SIZE,
-			.size = OMAP_TUNA_ION_HEAP_NONSECURE_TILER_SIZE,
+					OMAP4_ION_HEAP_TILER_SIZE -
+					OMAP4_ION_HEAP_NONSECURE_TILER_SIZE,
+			.size = OMAP4_ION_HEAP_NONSECURE_TILER_SIZE,
 		},
 	},
 };
@@ -1443,7 +1443,7 @@ static void __init tuna_reserve(void)
 
 	/* ipu needs to recognize secure input buffer area as well */
 	omap_ipu_set_static_mempool(PHYS_ADDR_DUCATI_MEM, PHYS_ADDR_DUCATI_SIZE +
-					OMAP_4_ION_HEAP_SECURE_INPUT_SIZE);
+					OMAP4_ION_HEAP_SECURE_INPUT_SIZE);
 	omap_reserve();
 }
 
