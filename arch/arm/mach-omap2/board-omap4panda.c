@@ -730,9 +730,9 @@ static void __init omap4_panda_reserve(void)
 
 #ifdef CONFIG_ION_OMAP
 	omap_ion_init();
-#else
- 	omap_reserve();
 #endif
+
+	omap_reserve();
 }
 
 MACHINE_START(OMAP4_PANDA, "OMAP4 Panda board")
