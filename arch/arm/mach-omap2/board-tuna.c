@@ -283,25 +283,6 @@ static struct platform_device tuna_gpio_i2c5_device = {
 	}
 };
 
-#define PHYS_ADDR_SMC_SIZE			(SZ_1M * 3)
-#define PHYS_ADDR_DUCATI_SIZE			(SZ_1M * 105)
-#define OMAP_TUNA_ION_HEAP_SECURE_INPUT_SIZE	(SZ_1M * 90)
-#ifdef CONFIG_TUNA_SUPER_RAM
-#define OMAP_TUNA_ION_HEAP_TILER_SIZE           (SZ_1M * 11)
-#endif
-#ifdef CONFIG_TUNA_BIG_MEM
-#define OMAP_TUNA_ION_HEAP_TILER_SIZE		(SZ_1M * 31)
-#endif
-#ifdef CONFIG_TUNA_STOCK_RAM
-#define OMAP_TUNA_ION_HEAP_TILER_SIZE		(SZ_1M * 81)
-#endif
-#define OMAP_TUNA_ION_HEAP_NONSECURE_TILER_SIZE	(SZ_1M * 15)
-
-#define PHYS_ADDR_SMC_MEM	(0x80000000 + SZ_1G - PHYS_ADDR_SMC_SIZE)
-#define PHYS_ADDR_DUCATI_MEM	(PHYS_ADDR_SMC_MEM - \
-				 PHYS_ADDR_DUCATI_SIZE - \
-				 OMAP_TUNA_ION_HEAP_SECURE_INPUT_SIZE)
-
 static struct ion_platform_data tuna_ion_data = {
 	.nr = 3,
 	.heaps = {
@@ -1462,7 +1443,7 @@ static void __init tuna_reserve(void)
 
 	/* ipu needs to recognize secure input buffer area as well */
 	omap_ipu_set_static_mempool(PHYS_ADDR_DUCATI_MEM, PHYS_ADDR_DUCATI_SIZE +
-					OMAP_TUNA_ION_HEAP_SECURE_INPUT_SIZE);
+					OMAP_4_ION_HEAP_SECURE_INPUT_SIZE);
 	omap_reserve();
 }
 
