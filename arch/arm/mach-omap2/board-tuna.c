@@ -62,8 +62,9 @@
 #include <mach/omap_fiq_debugger.h>
 
 #include <mach/id.h>
-#include "timer-gp.h"
 
+#include "timer-gp.h"
+#include "omap4_ion.h"
 #include "omap4-sar-layout.h"
 #include "hsmmc.h"
 #include "control.h"
