@@ -4,6 +4,7 @@
 #include <mach/tiler.h>
 #include <video/dsscomp.h>
 #include <plat/dsscomp.h>
+#include <plat/android-display.h>
 #include "dsscomp.h"
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
@@ -11,7 +12,6 @@
 #endif
 static bool blanked;
 
-#define NUM_TILER1D_SLOTS 2
 #define TILER1D_SLOT_SIZE (16 << 20)
 
 static struct tiler1d_slot {
@@ -20,7 +20,7 @@ static struct tiler1d_slot {
 	u32 phys;
 	u32 size;
 	u32 *page_map;
-} slots[NUM_TILER1D_SLOTS];
+} slots[NUM_ANDROID_TILER1D_SLOTS];
 static struct list_head free_slots;
 static struct dsscomp_dev *cdev;
 static DEFINE_MUTEX(mtx);
@@ -581,7 +581,7 @@ void dsscomp_gralloc_init(struct dsscomp_dev *cdev_)
 
 	if (!free_slots.next) {
 		INIT_LIST_HEAD(&free_slots);
-		for (i = 0; i < NUM_TILER1D_SLOTS; i++) {
+		for (i = 0; i < NUM_ANDROID_TILER1D_SLOTS; i++) {
 			u32 phys;
 			tiler_blk_handle slot =
 				tiler_alloc_block_area(TILFMT_PAGE,
