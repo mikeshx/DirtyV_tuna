@@ -64,7 +64,7 @@
 #include <mach/id.h>
 
 #include "timer-gp.h"
-#include "omap4_ion.h"
+#include <mach/omap4_ion.h>
 #include "omap4-sar-layout.h"
 #include "hsmmc.h"
 #include "control.h"

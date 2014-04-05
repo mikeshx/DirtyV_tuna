@@ -35,6 +35,7 @@
 #include <mach/emif.h>
 #include <mach/lpddr2-elpida.h>
 #include <mach/dmm.h>
+#include <mach/omap4_ion.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -49,7 +50,6 @@
 #include <video/omap-panel-generic-dpi.h>
 
 #include "timer-gp.h"
-#include "omap4_ion.h"
 #include "hsmmc.h"
 #include "control.h"
 #include "mux.h"
