@@ -57,6 +57,7 @@ struct thermal_dev_ops {
  * @dev_ops: The device specific operations for the sensor, governor and cooling
  *           agents.
  * @node: The list node of the
+ * @index: The index of the device created.
  * @current_temp: The current temperature reported for the specific domain
  *
  */
@@ -66,6 +67,7 @@ struct thermal_dev {
 	struct device	*dev;
 	struct thermal_dev_ops *dev_ops;
 	struct list_head node;
+	int		index;
 	int		current_temp;
 	int		slope;
 	int		constant_offset;
