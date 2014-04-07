@@ -701,7 +701,6 @@ static int __init omap_cpufreq_init(void)
 	omap_cpufreq_ready = !ret;
 
 	max_thermal = max_freq;
-	current_cooling_level = 0;
 
 	if (!ret) {
 		int t;
