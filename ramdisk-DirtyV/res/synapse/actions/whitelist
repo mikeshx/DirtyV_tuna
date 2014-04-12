@@ -24,8 +24,8 @@ if [ ! -z "`cat $sysfs`" -a -z "`cat $sd`" ]; then
   now=`cat $sysfs`;
   for proc in ${now//,/ }; do
     echo $proc >> $sd;
-    reset_uci;
   done;
+  reset_uci;
 fi;
 
 case $1 in

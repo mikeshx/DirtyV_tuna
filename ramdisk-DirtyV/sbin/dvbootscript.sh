@@ -131,7 +131,7 @@ done&
 # set up Synapse support
 /sbin/uci;
 
-# wait for systemui and increase some process priorities
+# wait for systemui and adjust some process priorities
 while sleep 1; do
   if [ `$bb pidof com.android.systemui` ]; then
     systemui=`$bb pidof com.android.systemui`;
