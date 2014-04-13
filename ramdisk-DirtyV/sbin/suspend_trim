@@ -1,28 +1,39 @@
 #!/system/bin/sh
+# boype @ xda-developers.com
 
-busybox=/sbin/busybox
-fstrim=/sbin/fstrim
+bb=/sbin/bb/busybox
 
 TRIMHLPFILE=/data/trimhelper
-RESUMETIME=$($busybox cat $TRIMHLPFILE | $busybox sed -n '1p')
-CURTIME=$($busybox date +%s)
+MASTERSWITCH=$($bb cat $TRIMHLPFILE | $bb sed -n '3p')
 
-if [ $RESUMETIME -eq 0 ] ; then
-  $busybox sed -i "1s/.*/$CURTIME/" $TRIMHLPFILE
-else
-  NOTRIMTIME=$($busybox cat $TRIMHLPFILE | $busybox sed -n '2p')
-  TIMEDIFF=$(( $CURTIME - $RESUMETIME + $NOTRIMTIME ))
-  if [ $TIMEDIFF -ge 900 ] ; then
-    CURIVAVOLT=$($busybox cat /sys/kernel/debug/voltage/vdd_iva/curr_vp_volt)
-	if [ $CURIVAVOLT -lt 925000 ] ; then
-	  $fstrim /cache
-	  $busybox sed -i '2s/.*/0/' $TRIMHLPFILE
-	else
-	  $busybox sed -i "2s/.*/$TIMEDIFF/" $TRIMHLPFILE
-	fi
+if [ $MASTERSWITCH -eq 1 ] ; then
+
+  RESUMETIME=$($bb cat $TRIMHLPFILE | $bb sed -n '1p')
+  CURTIME=$($bb date +%s)
+
+  if [ $RESUMETIME -eq 0 ] ; then
+    $bb sed -i "1s/.*/$CURTIME/" $TRIMHLPFILE
   else
-    $busybox sed -i "2s/.*/$TIMEDIFF/" $TRIMHLPFILE
+    NOTRIMTIME=$($bb cat $TRIMHLPFILE | $bb sed -n '2p')
+    TIMEDIFF=$(( $CURTIME - $RESUMETIME + $NOTRIMTIME ))
+    if [ $TIMEDIFF -ge 1200 ] ; then
+      CURIVAVOLT=$($bb cat /sys/kernel/debug/voltage/vdd_iva/curr_vp_volt)
+      if [ $CURIVAVOLT -lt 925000 ] ; then
+        $bb fstrim /data
+        $bb fstrim /cache
+        $bb mount -o remount,rw,nodiscard /system
+        $bb fstrim /system
+        $bb mount -o remount,ro,discard /system
+        $bb sed -i '2s/.*/0/' $TRIMHLPFILE
+        TRIMCOUNT=$($bb cat $TRIMHLPFILE | $bb sed -n '4p')
+        $bb sed -i "4s/.*/$((TRIMCOUNT + 1))/" $TRIMHLPFILE
+      else
+        $bb sed -i "2s/.*/$TIMEDIFF/" $TRIMHLPFILE
+      fi
+    else
+      $bb sed -i "2s/.*/$TIMEDIFF/" $TRIMHLPFILE
+    fi
+    $bb sed -i '1s/.*/0/' $TRIMHLPFILE
   fi
-  $busybox sed -i '1s/.*/0/' $TRIMHLPFILE
-fi
 
+fi
