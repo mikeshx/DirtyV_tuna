@@ -11,7 +11,8 @@ obj-$(CONFIG_ATMEL_PWM)		+= atmel_pwm.o
 obj-$(CONFIG_ATMEL_SSC)		+= atmel-ssc.o
 obj-$(CONFIG_ATMEL_TCLIB)	+= atmel_tclib.o
 obj-$(CONFIG_BMP085)		+= bmp085.o
-obj-$(CONFIG_BMP180)		+= bmp180.o
+obj-$(CONFIG_BMP18X)		+= bmp18x-core.o
+obj-$(CONFIG_BMP18X_I2C)	+= bmp18x-i2c.o
 obj-$(CONFIG_ICS932S401)	+= ics932s401.o
 obj-$(CONFIG_LKDTM)		+= lkdtm.o
 obj-$(CONFIG_TIFM_CORE)       	+= tifm_core.o
@@ -62,3 +63,4 @@ obj-$(CONFIG_OMAP_TEMP_CONTROL)	+= temp_control.o
 obj-$(CONFIG_CUSTOM_VOLTAGE)	+= custom_voltage.o
 obj-$(CONFIG_BLX)		+= blx.o
 obj-$(CONFIG_SOUND_CONTROL)	+= sound_control.o
+
