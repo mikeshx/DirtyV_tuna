@@ -151,7 +151,7 @@ static struct i2c_board_info __initdata tuna_sensors_i2c4_boardinfo[] = {
 		.platform_data = &gp2a_pdata,
 	},
 	{
-		I2C_BOARD_INFO("bmp180", 0x77),
+		I2C_BOARD_INFO("bmp18x", 0x77),
 	},
 };
 
