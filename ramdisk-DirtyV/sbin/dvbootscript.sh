@@ -81,7 +81,7 @@ echo 3000000 > /proc/sys/kernel/sched_wakeup_granularity_ns;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
-# initialize timer slack
+# initialize timer_slack
 echo 100000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
 
 # decrease fs lease time
@@ -128,8 +128,20 @@ while sleep 1; do
   fi;
 done&
 
+# set up suspend_trim support
+trimhelper=/data/trimhelper;
+if [ -s /data/trimhelper ]; then
+  $bb sed -i "1s/.*/$($bb date +%s)/" $trimhelper;
+  $bb sed -i "4s/.*/0/" $trimhelper;
+else
+  $bb date +%s > $trimhelper;
+  echo 0 >> $trimhelper;
+  echo 0 >> $trimhelper;
+  echo 0 >> $trimhelper;
+fi;
+
 # set up Synapse support
-/sbin/uci;
+/sbin/uci &
 
 # wait for systemui and adjust some process priorities
 while sleep 1; do

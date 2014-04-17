@@ -57,13 +57,19 @@ cat << CTAG
 		}
 	}},
 	{ SCheckBox:{
-                description:"When enabled and screen is on, Fsync operation is asynchronous, increasing speed but decreasing data integrity. When screen is off, Fsync operation is synchronous.",
+                description:"Makes Fsync operation asynchronous with screen on, increasing speed but decreasing data integrity. With screen off, Fsync operation is synchronous.",
                 label:"Dynamic Fsync",
                 default:`cat /sys/kernel/dyn_fsync/Dyn_fsync_active`,
                 action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active"
         }},
 	{ SCheckBox:{
-                description:"When disabled this will stop dmesg/kmsg and logcat and crash reports will be useless, but there is a minor possible gain to battery life.",
+                description:"Perform filesystem trimming when screen is off and idle time is over 20 minutes, to maintain I/O speeds over time.",
+                label:"Suspend Trim",
+                default:`cat /data/trimhelper | sed -n '3p'`,
+                action:"generic /data/trimhelper"
+        }},
+	{ SCheckBox:{
+                description:"When disabled this will stop dmesg/kmsg and logcat creation; crash reports will be useless, but there is a minor possible gain to battery life.",
                 label:"System Logging",
                 default:`cat /sys/kernel/logger_mode/logger_mode | tr -cd [0-9]`,
                 action:"generic /sys/kernel/logger_mode/logger_mode"
