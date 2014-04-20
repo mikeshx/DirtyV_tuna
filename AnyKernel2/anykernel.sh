@@ -37,11 +37,26 @@ dump_boot() {
 
 # repack ramdisk then build and write image
 write_boot() { 
-  find . | cpio -o -H newc | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
-  if [ ! -z `cat $split_img/boot.img-cmdline` ]; then
-    cmdline="--cmdline `cat $split_img/boot.img-cmdline`";
+  cd $split_img;
+  cmdline=`cat *-cmdline`;
+  base=`cat *-base`;
+  pagesize=`cat *-pagesize`;
+  kerneloff=`cat *-kerneloff`;
+  ramdiskoff=`cat *-ramdiskoff`;
+  tagsoff=`cat *-tagsoff`;
+  if [ -f *-second ]; then
+    second=`ls *-second`;
+    second="--second $split_img/$second";
+    secondoff=`cat *-secondoff`;
+    secondoff="--second_offset $secondoff";
   fi;
-  $bin/mkbootimg --kernel /tmp/anykernel/zImage --ramdisk /tmp/anykernel/ramdisk-new.cpio.gz $cmdline --base 0x`cat $split_img/boot.img-base` --pagesize `printf "%d\n" 0x$(cat $split_img/boot.img-pagesize)` --output /tmp/anykernel/boot-new.img;
+  if [ -f *-dtb ]; then
+    dtb=`ls *-dtb`;
+    dtb="--dt $split_img/$dtb";
+  fi;
+  cd $ramdisk;
+  find . | cpio -o -H newc | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
+  $bin/mkbootimg --kernel /tmp/anykernel/zImage --ramdisk /tmp/anykernel/ramdisk-new.cpio.gz $second --cmdline "$cmdline" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset $tagsoff $dtb --output /tmp/anykernel/boot-new.img;
   dd if=/tmp/anykernel/boot-new.img of=$block;
 }
 
@@ -100,6 +115,8 @@ replace_file() {
 # set permissions for included files
 chmod -R 755 $ramdisk
 chmod 644 $ramdisk/sbin/media_profiles.xml
+chmod 644 $ramdisk/res/synapse/*
+chmod -R 755 $ramdisk/res/synapse/actions
 
 
 ## AnyKernel install
@@ -115,7 +132,8 @@ append_file init.rc "run-parts" init;
 # init.tuna.rc
 backup_file init.tuna.rc;
 insert_line init.tuna.rc "nodiratime barrier=0" "mount_all /fstab.tuna" "\tmount ext4 /dev/block/platform/omap/omap_hsmmc.0/by-name/userdata /data remount nosuid nodev noatime nodiratime barrier=0\n";
-append_file init.tuna.rc "dvbootscript" init.tuna;
+append_file init.tuna.rc "fuse_usbdisk" init.tuna1;
+append_file init.tuna.rc "dvbootscript" init.tuna2;
 
 # init.superuser.rc
 if [ -f init.superuser.rc ]; then
