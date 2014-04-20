@@ -113,7 +113,7 @@ cat << CTAG
                 description:"Limit SOC highest temperature before throttling begins."
         }},
 	{ SSeekBar:{
-                min:60000, max:80000, unit:"°C", weight:0.001, step:1000,
+                min:60000, max:90000, unit:"°C", weight:0.001, step:1000,
                 action:"generic /sys/class/misc/tempcontrol/templimit"
         }},
 	{ SCheckBox:{

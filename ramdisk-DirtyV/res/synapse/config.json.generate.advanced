@@ -28,47 +28,6 @@ cat << CTAG
 	done
 `
       { SPane:{
-		title:"LMK Whitelist",
-		description:"Allows certain apps to be exempt from being killed until absolutely necessary to avoid out-of-memory (OOM)."
-      }},
-	{ SCheckBox:{
-                label:"Do-Not-Kill System Processes List",
-                default:`cat /sys/module/lowmemorykiller/parameters/donotkill_sysproc`,
-                action:"generic /sys/module/lowmemorykiller/parameters/donotkill_sysproc"
-        }},
-	{ SOptionList:{
-		title:"Exempt System Processes",
-		action:"whitelist set sys",
-		default:`/res/synapse/actions/whitelist set sys`,
-		values:[
-`
-			for SYSPROC in \`/res/synapse/actions/whitelist list sys\`; do
-			  echo "\"$SYSPROC\","
-			done
-`
-		]
-	}},
-	{ SCheckBox:{
-                label:"Do-Not-Kill User Processes List",
-                default:`cat /sys/module/lowmemorykiller/parameters/donotkill_proc`,
-                action:"generic /sys/module/lowmemorykiller/parameters/donotkill_proc"
-        }},
-	{ SOptionList:{
-		title:"Exempt User Processes",
-		action:"whitelist set user",
-		default:`/res/synapse/actions/whitelist set user`,
- 		values:[
-`
-			for PROC in \`/res/synapse/actions/whitelist list user\`; do
-			  echo "\"$PROC\","
-			done
-`
-		]
-	}},
-      { SDescription:{
-        description:"The process lists above are view only. To add processes, check the Synapse sdcard folder for the parsed files and add one process name per line. Lists updated on reboot.",
-      }},
-      { SPane:{
 		title:"Kernel Entropy"
       }},
 	{ SLiveLabel:{
@@ -179,13 +138,13 @@ cat << CTAG
         }},
 	{ SSeekBar:{
 		title:"Pages To Scan",
-		max:500, min:10, step:10,
+		max:1024, min:8, step:8,
 		default:`cat /sys/kernel/mm/ksm/pages_to_scan`,
 				action:"generic /sys/kernel/mm/ksm/pages_to_scan"
 	}},
 	{ SSeekBar:{
 		title:"Sleep",
-		max:2000, min:50, step:50, unit:" ms",
+		max:3000, min:50, step:50, unit:" ms",
 		default:`cat /sys/kernel/mm/ksm/sleep_millisecs`,
 				action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
 	}},
