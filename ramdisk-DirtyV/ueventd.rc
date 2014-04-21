@@ -5,6 +5,8 @@
 /dev/tty                  0666   root       root
 /dev/random               0666   root       root
 /dev/urandom              0666   root       root
+# Make HW RNG readable by group system to let EntropyMixer read it.
+/dev/hw_random            0440   root       system
 /dev/ashmem               0666   root       root
 /dev/binder               0666   root       root
 
@@ -104,15 +106,18 @@
 /sys/devices/system/cpu/cpufreq ondemand/up_threshold_any_cpu_load   0664    system  system
 
 /sys/devices/system/cpu/cpufreq interactive/boostpulse  0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/boostpulse_duration  0664    system  system
 /sys/devices/system/cpu/cpufreq interactive/timer_rate  0664    system  system
 /sys/devices/system/cpu/cpufreq interactive/min_sample_time 0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/sampling_down_factor 0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/target_loads 0664    system  system
 /sys/devices/system/cpu/cpufreq interactive/hispeed_freq    0664    system  system
 /sys/devices/system/cpu/cpufreq interactive/go_hispeed_load 0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/above_hispeed_delay  0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/boostpulse_duration  0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/sampling_down_factor 0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/input_boost_freq     0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/above_hispeed_delay 0664    system  system
 /sys/devices/system/cpu/cpufreq interactive/io_is_busy      0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/target_loads    0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/timer_slack     0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/timer_slack      0664    system  system
+/sys/devices/system/cpu/cpufreq interactive/input_boost_freq     0664    system  system
 
+/sys/devices/system/cpu/cpu* cpufreq/scaling_max_freq   0664    system  system
+/sys/devices/system/cpu/cpu* cpufreq/scaling_min_freq   0664    system  system
+/sys/devices/system/cpu/cpu* cpufreq/scaling_governor   0664    system  system
