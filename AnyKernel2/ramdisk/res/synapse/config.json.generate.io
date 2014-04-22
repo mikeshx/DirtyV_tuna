@@ -5,25 +5,10 @@ cat << CTAG
 {
     name:I/O,
     elements:[
-    { SPane:{
-        title:"I/O Scheduler",
-        description:"Set the active I/O elevator algorithm. The scheduler decides how to prioritize I/O requests and how to handle them."
-    }},
-    { SOptionList:{
-        default:`echo $(/res/synapse/actions/bracket-option /sys/block/mmcblk0/queue/scheduler)`,
-        action:"bracket-option /sys/block/mmcblk0/queue/scheduler",
-        values:[
-`
-          for IOSCHED in \`cat /sys/block/mmcblk0/queue/scheduler | sed -e 's/\]//;s/\[//'\`; do
-            echo "\"$IOSCHED\","
-          done
-`
-        ]
-    }},
-        { SPane:{
+	{ SPane:{
 		title:"Block Queue",
 		description:"Set the internal storage block device I/O parameters."
-        }},
+	}},
 	{ SSeekBar:{
 		title:"Read-Ahead Buffer",
 		description:"Maximum amount to read-ahead for filesystems on the internal storage.",
