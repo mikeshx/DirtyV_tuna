@@ -830,7 +830,7 @@ static void tuna_audio_init(void)
 
 	/* twl6040 naudint */
 	omap_mux_init_signal("sys_nirq2.sys_nirq2", \
-		OMAP_PIN_INPUT_PULLUP);
+		OMAP_PIN_INPUT_PULLUP | OMAP_PIN_OFF_WAKEUPENABLE);
 
 	/* aud_pwron */
 	if (omap4_tuna_get_type() == TUNA_TYPE_TORO &&
