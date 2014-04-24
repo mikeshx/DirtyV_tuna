@@ -81,6 +81,10 @@ echo 3000000 > /proc/sys/kernel/sched_wakeup_granularity_ns;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
+# more rational defaults for KSM
+echo 256 /sys/kernel/mm/ksm/pages_to_scan
+echo 1500 /sys/kernel/mm/ksm/sleep_millisecs
+
 # initialize timer_slack
 echo 100000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
 

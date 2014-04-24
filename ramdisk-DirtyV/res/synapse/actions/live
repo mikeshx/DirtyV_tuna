@@ -33,3 +33,4 @@ case $1 in
     echo "`cat /proc/sys/kernel/random/entropy_avail`";
   ;;
 esac;
+
