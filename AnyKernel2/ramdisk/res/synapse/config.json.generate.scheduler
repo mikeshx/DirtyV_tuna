@@ -34,9 +34,10 @@ cat << CTAG
     { STreeDescriptor:{
         path:"/sys/block/mmcblk0/queue/iosched",
         generic:{
-            directory: { },
-            element: { SGeneric:{ title:"@NAME" }}
-        }
+            directory:{ },
+            element:{ SGeneric:{ title:"@NAME" }}
+        },
+        exclude:[ "weights" ]
     }}
   ]
 }

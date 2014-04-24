@@ -118,6 +118,5 @@ case "$1" in
     sleep 1;
     reboot;
   ;;
-
 esac;
 
