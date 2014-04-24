@@ -133,7 +133,7 @@ cat << CTAG
     }},
     { SSeekBar:{
         title:"Pages To Scan",
-        min:8, max:1024, step:8,
+        min:4, max:1024, step:4,
         default:`cat /sys/kernel/mm/ksm/pages_to_scan`,
         action:"generic /sys/kernel/mm/ksm/pages_to_scan"
     }},
