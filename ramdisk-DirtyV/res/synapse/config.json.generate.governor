@@ -36,8 +36,8 @@ cat << CTAG
         generic:{ directory:
             { STreeDescriptor:{
                 generic:{ 
-                    directory: { },
-                    element: { SGeneric:{ title:"@NAME" }}
+                    directory:{ },
+                    element:{ SGeneric:{ title:"@NAME" }}
                 },
                 exclude:[ "boostpulse" ]
             }}
