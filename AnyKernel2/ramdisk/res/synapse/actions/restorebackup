@@ -34,7 +34,7 @@ case "$1" in
   flashboot)
     if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
       dd if="$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" of="$2" 2> /dev/null;
-	  reboot;
+      reboot;
     elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
       echo "None selected.";
     else
@@ -118,6 +118,5 @@ case "$1" in
     sleep 1;
     reboot;
   ;;
-
 esac;
 

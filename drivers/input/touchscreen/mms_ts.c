@@ -128,7 +128,6 @@ static int boostpulse_open(void)
 
 		if (boost.boostpulse_fd < 0)
 		{
-			pr_info("Error opening %s\n", BOOSTPULSE);
 			return -1;		
 		}
 	}
@@ -190,7 +189,7 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 
 		if (len < 0)
 		{
-			pr_info("Error writing to %s\n", BOOSTPULSE);			
+			
 		}
 	}
 
