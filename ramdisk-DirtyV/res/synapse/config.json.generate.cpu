@@ -78,27 +78,29 @@ cat << CTAG
 `
         }
     }},
-    { SPane:{
-        title:"Multicore Power Saving",
-        description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive."
+    { STitleBar:{
+        title:"Power Saving"
     }},
     { SSeekBar:{
+        title:"Multicore Power Savings",
+        description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive.",
         default:`cat /sys/devices/system/cpu/sched_mc_power_savings`,
         action:"generic /sys/devices/system/cpu/sched_mc_power_savings",
         values:{ 0:"0: Disabled", 1:"1", 2:"2" }
     }},
-    { SPane:{
-        title:"Temperature Limit",
-        description:"Limit SOC highest temperature before throttling begins."
-    }},
-    { SSeekBar:{
-        min:60000, max:90000, step:1000, weight:0.001, unit:"°C",
-        action:"generic /sys/class/misc/tempcontrol/templimit"
+    { STitleBar:{
+        title:"Thermal Framework"
     }},
     { SCheckBox:{
         label:"Thermal Throttling",
+        description:"Force lower CPU frequencies when temperature reaches the throttling limit, to avoid overheating.",
         default:`polar_to_bool /sys/module/omap_temp_sensor/parameters/throttle_enabled`,
         action:"generic /sys/module/omap_temp_sensor/parameters/throttle_enabled"
+    }},
+    { SSeekBar:{
+        title: "Temperature Limit",
+        min:60000, max:90000, step:1000, weight:0.001, unit:"°C",
+        action:"generic /sys/class/misc/tempcontrol/templimit"
     }},
     { SPane:{
         title:"SmartReflex",
