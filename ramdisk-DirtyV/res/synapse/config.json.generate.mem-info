@@ -1,0 +1,12 @@
+cat << CTAG
+{
+  name:Memory Information,
+  elements:[
+    { SLiveLabel:{
+        title:"Memory",
+        refresh:1000,
+        action:"live meminfo"
+    }},
+  ]
+}
+CTAG

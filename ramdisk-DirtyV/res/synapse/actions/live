@@ -35,5 +35,11 @@ case $1 in
   entropy)
     echo "`cat /proc/sys/kernel/random/entropy_avail`";
   ;;
+  meminfo)
+    echo "`cat /proc/meminfo`";
+  ;;
+  vmstats)
+    echo "`cat /proc/vmstat`";
+  ;;
 esac;
 

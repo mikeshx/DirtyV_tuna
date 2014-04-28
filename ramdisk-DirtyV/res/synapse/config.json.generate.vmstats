@@ -1,0 +1,12 @@
+cat << CTAG
+{
+  name:Virtual Memory Statistics,
+  elements:[
+    { SLiveLabel:{
+        title:"VMS",
+        refresh:1000,
+        action:"live vmstats"
+    }},
+  ]
+}
+CTAG
