@@ -1,4 +1,8 @@
-case $1 in
+readlines() {
+  awk -v startl=${2:-1} -v nlines=${1:-10} ' NR - (startl-1) > nlines { exit( 0 ); } NR >= startl '
+}
+
+ case $1 in
   cpufreq)
     if [ -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq ]; then
       CPUFREQONE="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)) MHz";
@@ -34,6 +38,14 @@ case $1 in
 
   entropy)
     echo "`cat /proc/sys/kernel/random/entropy_avail`";
+  ;;
+
+  meminfo)
+    echo "`cat /proc/meminfo | readlines $1 $2 | awk 1 ORS='@n'`";
+  ;;
+
+  vmstats)
+    echo "`cat /proc/vmstat | readlines $1 $2 | awk 1 ORS='@n'`";
   ;;
 esac;
 
