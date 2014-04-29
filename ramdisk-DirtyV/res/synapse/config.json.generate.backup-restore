@@ -97,8 +97,8 @@ cat << CTAG
         action:"restorebackup restart"
     }},
     { SButton:{
-        label:"Reboot Device",
-        action:"restorebackup reboot"
+        label:"Toggle Dev Tools",
+        action:"restorebackup switch"
     }}
   ]
 }

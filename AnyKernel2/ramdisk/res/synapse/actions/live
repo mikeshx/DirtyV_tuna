@@ -1,3 +1,7 @@
+readlines() {
+  awk -v startl=${2:-1} -v nlines=${1:-10} ' NR - (startl-1) > nlines { exit( 0 ); } NR >= startl '
+}
+
 case $1 in
   cpufreq)
     if [ -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq ]; then
@@ -34,6 +38,25 @@ case $1 in
 
   entropy)
     echo "`cat /proc/sys/kernel/random/entropy_avail`";
+  ;;
+
+  meminfo)
+    echo "`cat /proc/meminfo | readlines r $2 $3 | awk 1 ORS='@n'`";
+  ;;
+
+  vmstats)
+    echo "`cat /proc/vmstat | readlines r $2 $3 | awk 1 ORS='@n'`";
+  ;;
+
+  bootloader)
+    lockstate=`dd ibs=1 count=1 skip=124 obs=1 if=/dev/block/platform/omap/omap_hsmmc.0/by-name/param 2> /dev/null | od -h | head -n 1 | cut -c 11-`;
+    if [ $lockstate == "01" ]; then
+      echo "Locked";
+    elif [ $lockstate == "00" ]; then
+      echo "Unlocked";
+    else
+      echo "Unknown";
+    fi;
   ;;
 esac;
 

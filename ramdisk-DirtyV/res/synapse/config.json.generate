@@ -1,6 +1,6 @@
 cat << CTAG
 {
-  sections: [
+  sections:[
     `. /res/synapse/config.json.generate.cpu`,
     `. /res/synapse/config.json.generate.governor`,
     `. /res/synapse/config.json.generate.gpu-panel`,
@@ -11,8 +11,6 @@ cat << CTAG
     `. /res/synapse/config.json.generate.vm-zram`,
     `. /res/synapse/config.json.generate.advanced`,
     `. /res/synapse/config.json.generate.backup-restore`
-    `. /res/synapse/config.json.generate.mem-info`
-    `. /res/synapse/config.json.generate.vmstats`
   ]
 }
 CTAG
