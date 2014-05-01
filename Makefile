@@ -358,10 +358,10 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 
 LOW_ARM_FLAGS	= -march=armv7-a -mtune=cortex-a9 \
-		  -mfpu=neon -mfloat-abi=softfp
+		  -mfpu=neon -mfloat-abi=hardfp
 
 ARM_FLAGS         -marm -march=armv7-a -mtune=cortex-a9 \
-		  -mfpu=neon -mfloat-abi=softfp \
+		  -mfpu=neon -mfloat-abi=hardfp \
 		  -fsingle-precision-constant -mvectorize-with-neon-quad
 		 
 
