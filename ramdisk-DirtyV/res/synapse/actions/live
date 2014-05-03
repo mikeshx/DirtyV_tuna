@@ -58,5 +58,10 @@ case $1 in
       echo "Unknown";
     fi;
   ;;
+
+  uptime)
+    UPTIME=`uptime`;
+    echo "${UPTIME//, /@n}";
+  ;;
 esac;
 

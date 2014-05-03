@@ -3,6 +3,25 @@ cat << CTAG
   name:Dev Tools,
   elements:[
     { STitleBar:{
+        title:"Kernel Info"
+    }},
+`
+    cat /proc/version | sed -e 's/ (gcc/\\ngcc/g;s/ ) /\\n/g' | while read line; do
+        echo '{ SDescription:{
+                  description:"'$line'"
+              }},
+              { SSpacer:{ }},
+        ';
+    done;
+`
+    { STitleBar:{
+        title:"Uptime"
+    }},
+    { SLiveLabel:{
+        refresh:1000,
+        action:"live uptime"
+    }},
+    { STitleBar:{
         title:"Bootloader Status"
     }},
     { SLiveLabel:{
