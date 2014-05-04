@@ -842,10 +842,10 @@ module_param_named(oomcount, oom_count, uint, S_IRUGO);
 #endif
 
 #ifdef CONFIG_ZRAM_FOR_ANDROID
-module_param_named(nr_reclaim, number_of_reclaim_pages, uint, S_IRUSR | S_IWUSR);
-module_param_named(min_freeswap, minimum_freeswap_pages, uint, S_IRUSR | S_IWUSR);
-module_param_named(min_reclaim, minimum_reclaim_pages, uint, S_IRUSR | S_IWUSR);
-module_param_named(min_interval, minimum_interval_time, uint, S_IRUSR | S_IWUSR);
+module_param_named(nr_reclaim, number_of_reclaim_pages, uint, S_IRUGO | S_IWUSR);
+module_param_named(min_freeswap, minimum_freeswap_pages, uint, S_IRUGO | S_IWUSR);
+module_param_named(min_reclaim, minimum_reclaim_pages, uint, S_IRUGO | S_IWUSR);
+module_param_named(min_interval, minimum_interval_time, uint, S_IRUGO | S_IWUSR);
 #endif /* CONFIG_ZRAM_FOR_ANDROID */
 
 module_init(lowmem_init);
