@@ -118,7 +118,6 @@ case "$1" in
     mount -t rootfs -o rw,remount rootfs;
     actionpath=`/sbin/uci actionpath`;
     generate=`/sbin/uci configpath`.generate;
-    cd $actionpath../;
     if [ -f "$generate-devtools" ]; then
       mv $generate $generate-synapse;
       mv $generate-devtools $generate;
