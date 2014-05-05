@@ -2,6 +2,10 @@ readlines() {
   awk -v startl=${2:-1} -v nlines=${1:-10} ' NR - (startl-1) > nlines { exit( 0 ); } NR >= startl '
 }
 
+freq() {
+  echo "$((`cat /sys/devices/system/cpu/cpu$1/cpufreq/$2_cur_freq` / 1000)) MHz";
+}
+
 volt() {
   echo "$((`cat /sys/kernel/debug/voltage/vdd_$1/curr_vp_volt` / 1000)) mV";
 }
@@ -9,13 +13,13 @@ volt() {
 case $1 in
   cpufreq)
     if [ -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq ]; then
-      CPUFREQONE="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)) MHz";
+      CPUFREQONE=$(freq 0 scaling);
     else
       CPUFREQONE=Offline;
     fi
 
     if [ -e /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq ]; then
-      CPUFREQTWO="$((`cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)) MHz";
+      CPUFREQTWO=$(freq 1 scaling);
     else
       CPUFREQTWO=Offline;
     fi
@@ -32,10 +36,10 @@ case $1 in
     echo "CPU: $CPU       Battery: $BATTERY";
   ;;
 
-  gpuiva)
-    GPUFREQ="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_cur_freq` / 1000)) MHz";
+  gpu-iva)
+    GPUFREQ=$(freq 0 gpu);
     CVOLT=$(volt core);
-    IVAFREQ="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/iva_cur_freq` / 1000)) MHz";
+    IVAFREQ=$(freq 0 iva);
     IVOLT=$(volt iva);
 
     echo "GPU: $GPUFREQ      $CVOLT@nIVA: $IVAFREQ        $IVOLT ";

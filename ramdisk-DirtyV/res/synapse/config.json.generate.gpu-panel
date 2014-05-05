@@ -7,7 +7,7 @@ cat << CTAG
     }},
     { SLiveLabel:{
         refresh:1000,
-        action:"live gpuiva"
+        action:"live gpu-iva"
     }},
     { STitleBar:{
         title:"GPU Frequency Scaling"
