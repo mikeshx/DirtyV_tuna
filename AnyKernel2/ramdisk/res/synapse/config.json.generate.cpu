@@ -22,11 +22,6 @@ cat << CTAG
         refresh:500,
         action:"live cpufreq"
     }},
-    { SLiveLabel:{
-        title:"CPU Voltage",
-        refresh:500,
-        action:"live volt mpu"
-    }},
     { SSeekBar:{
         title:"CPU Max Frequency",
         description:"Set the maximum frequency the CPU scales up to.",

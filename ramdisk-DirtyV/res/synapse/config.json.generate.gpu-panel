@@ -3,12 +3,14 @@ cat << CTAG
   name:GPU & Panel,
   elements:[
     { STitleBar:{
-        title:"GPU Frequency Scaling"
+        title:"GPU / IVA Frequency"
     }},
     { SLiveLabel:{
-        title:"GPU Frequency",
         refresh:1000,
-        action:"live gpufreq"
+        action:"live gpuiva"
+    }},
+    { STitleBar:{
+        title:"GPU Frequency Scaling"
     }},
     { SSeekBar:{
         title:"GPU OC Frequency",
