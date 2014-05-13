@@ -15,13 +15,6 @@ cat << CTAG
     done;
 `
     { STitleBar:{
-        title:"Uptime"
-    }},
-    { SLiveLabel:{
-        refresh:1000,
-        action:"live uptime"
-    }},
-    { STitleBar:{
         title:"Bootloader Status"
     }},
     { SLiveLabel:{
@@ -61,6 +54,6 @@ cat << CTAG
         label:"Reboot Bootloader",
         action:"devtools reboot bootloader"
     }}
-   ]
+  ]
 }
 CTAG
