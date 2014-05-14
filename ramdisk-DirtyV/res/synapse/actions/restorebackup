@@ -114,9 +114,19 @@ case "$1" in
     am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
   ;;
 
-  reboot)
-    sleep 1;
-    reboot;
+  switch)
+    mount -t rootfs -o rw,remount rootfs;
+    actionpath=`/sbin/uci actionpath`;
+    generate=`/sbin/uci configpath`.generate;
+    if [ -f "$generate-devtools" ]; then
+      mv $generate $generate-synapse;
+      mv $generate-devtools $generate;
+    else
+      mv $generate $generate-devtools;
+      mv $generate-synapse $generate;
+    fi;
+    mount -t rootfs -o ro,remount rootfs;
+    $actionpath/restorebackup restart;
   ;;
 esac;
 

@@ -5324,8 +5324,10 @@ int ext4_write_inode(struct inode *inode, struct writeback_control *wbc)
 		err = __ext4_get_inode_loc(inode, &iloc, 0);
 		if (err)
 			return err;
-		if (wbc->sync_mode == WB_SYNC_ALL)
+		if (wbc->sync_mode == WB_SYNC_ALL) {
+			set_buffer_meta(iloc.bh);
 			sync_dirty_buffer(iloc.bh);
+		}
 		if (buffer_req(iloc.bh) && !buffer_uptodate(iloc.bh)) {
 			EXT4_ERROR_INODE_BLOCK(inode, iloc.bh->b_blocknr,
 					 "IO error syncing inode");
@@ -5407,6 +5409,7 @@ int ext4_setattr(struct dentry *dentry, struct iattr *attr)
 			if (attr->ia_size > sbi->s_bitmap_maxbytes)
 				return -EFBIG;
 		}
+		down_write(&(EXT4_I(inode)->truncate_lock));
 	}
 
 	if (S_ISREG(inode->i_mode) &&
@@ -5454,6 +5457,9 @@ int ext4_setattr(struct dentry *dentry, struct iattr *attr)
 		} else if (ext4_test_inode_flag(inode, EXT4_INODE_EOFBLOCKS))
 			ext4_truncate(inode);
 	}
+
+	if (attr->ia_valid & ATTR_SIZE)
+		up_write(&(EXT4_I(inode)->truncate_lock));
 
 	if (!rc) {
 		setattr_copy(inode, attr);
@@ -5900,10 +5906,10 @@ int ext4_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	struct address_space *mapping = inode->i_mapping;
 
 	/*
-	 * Get i_alloc_sem to stop truncates messing with the inode. We cannot
-	 * get i_mutex because we are already holding mmap_sem.
+	 * Get truncate_lock to stop truncates messing with the inode. We
+	 * cannot get i_mutex because we are already holding mmap_sem.
 	 */
-	down_read(&inode->i_alloc_sem);
+	down_read(&(EXT4_I(inode)->truncate_lock));
 	size = i_size_read(inode);
 	if (page->mapping != mapping || size <= page_offset(page)
 	    || !PageUptodate(page)) {
@@ -5915,7 +5921,7 @@ int ext4_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	lock_page(page);
 	wait_on_page_writeback(page);
 	if (PageMappedToDisk(page)) {
-		up_read(&inode->i_alloc_sem);
+		up_read(&(EXT4_I(inode)->truncate_lock));
 		return VM_FAULT_LOCKED;
 	}
 
@@ -5933,7 +5939,7 @@ int ext4_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	if (page_has_buffers(page)) {
 		if (!walk_page_buffers(NULL, page_buffers(page), 0, len, NULL,
 					ext4_bh_unmapped)) {
-			up_read(&inode->i_alloc_sem);
+			up_read(&(EXT4_I(inode)->truncate_lock));
 			return VM_FAULT_LOCKED;
 		}
 	}
@@ -5962,11 +5968,11 @@ int ext4_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	 */
 	lock_page(page);
 	wait_on_page_writeback(page);
-	up_read(&inode->i_alloc_sem);
+	up_read(&(EXT4_I(inode)->truncate_lock));
 	return VM_FAULT_LOCKED;
 out_unlock:
 	if (ret)
 		ret = VM_FAULT_SIGBUS;
-	up_read(&inode->i_alloc_sem);
+	up_read(&(EXT4_I(inode)->truncate_lock));
 	return ret;
 }

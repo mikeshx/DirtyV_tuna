@@ -18,7 +18,7 @@ cat << CTAG
         ],
         notify:[
             { on:APPLY,
-              do:[ REFRESH, CANCEL ],
+              do:[ RESET, REFRESH, APPLY ],
               to:"/sys/block/mmcblk0/queue/iosched"
             },
             { on:REFRESH,

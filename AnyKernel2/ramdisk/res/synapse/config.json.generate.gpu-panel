@@ -3,12 +3,14 @@ cat << CTAG
   name:GPU & Panel,
   elements:[
     { STitleBar:{
-        title:"GPU Frequency Scaling"
+        title:"GPU / IVA Frequency"
     }},
     { SLiveLabel:{
-        title:"GPU Frequency",
         refresh:1000,
-        action:"live gpufreq"
+        action:"live gpu-iva"
+    }},
+    { STitleBar:{
+        title:"GPU Frequency Scaling"
     }},
     { SSeekBar:{
         title:"GPU OC Frequency",
@@ -20,29 +22,27 @@ cat << CTAG
     { STitleBar:{
         title:"Screen"
     }},
+    { SSeekBar:{
+        title:"Trinity Contrast",
+        description:"Set the luminance difference between dark and light.",
+        min:-24, max:16,
+        default:`cat /sys/module/panel_s6e8aa0/parameters/contrast`,
+        action:"generic /sys/module/panel_s6e8aa0/parameters/contrast"
+    }},
+    { SSeekBar:{
+        title:"OMAP Gamma Contrast",
+        description:"Set midtones (middle gray levels).",
+        default:`cat /sys/devices/platform/omapdss/manager0/gamma`,
+        action:"generic /sys/devices/platform/omapdss/manager0/gamma",
+        values:{ 0:"0: Disabled", 1:"1", 2:"2", 3:"3", 4:"4",
+                 5:"5: Default", 6:"6", 7:"7", 8:"8", 9:"9", 10:"10"
+        }
+    }},
     { SCheckBox:{
         label:"Content Adaptive Brightness",
         description:"Decreases the brightness of mostly-white backgrounds to save battery.",
         default:`cat /sys/class/backlight/s6e8aa0/acl_set`,
         action:"generic /sys/class/backlight/s6e8aa0/acl_set"
-    }},
-    { SPane:{
-        title:"Trinity Contrast",
-        description:"Set the luminance difference between dark and light."
-    }},
-    { SSeekBar:{
-        min:-24, max:16,
-        default:`cat /sys/module/panel_s6e8aa0/parameters/contrast`,
-        action:"generic /sys/module/panel_s6e8aa0/parameters/contrast"
-    }},
-    { SPane:{
-        title:"OMAP Gamma Contrast",
-        description:"Set midtones (middle gray levels)."
-    }},
-    { SSeekBar:{
-        max:10,
-        default:`cat /sys/devices/platform/omapdss/manager0/gamma`,
-        action:"generic /sys/devices/platform/omapdss/manager0/gamma"
     }},
     { SPane:{
         title:"Color Multiplier",
@@ -66,7 +66,7 @@ cat << CTAG
 `
     { SCheckBox:{
         label:"Safety Limit",
-        description:"Lock color values to a range with a possibly decreased likelihood to cause screen burn-in.",
+        description:"Lock color values to a range with a possibly decreased likelihood of causing screen burn-in.",
         default:`cat /sys/class/misc/colorcontrol/safety_enabled`,
         action:"generic /sys/class/misc/colorcontrol/safety_enabled"
     }},
