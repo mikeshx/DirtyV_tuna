@@ -14,8 +14,12 @@ case $1 in
     elif [ $lockstate == $unlocked ]; then
       echo "Locking...";
       setstate=$locked;
+    else
+      echo "Unknown state. No changes made.";
     fi;
-    echo -ne "\x$setstate" | dd obs=1 count=1 seek=124 of=$block 2> /dev/null;
+    if [ "$setstate" ]; then
+      echo -ne "\x$setstate" | dd obs=1 count=1 seek=124 of=$block 2> /dev/null;
+    fi;
   ;;
 
   logcat)
