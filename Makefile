@@ -390,17 +390,20 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
 		   -march=armv7-a -mcpu=cortex-a9 -mtune=cortex-a9 \
 		   -funswitch-loops -fpredictive-commoning -fgcse-after-reload \
-		   -fno-delete-null-pointer-checks -pipe -funroll-loops -fvariable-expansion-in-unroller
+		   -fno-delete-null-pointer-checks -pipe -funroll-loops -fvariable-expansion-in-unroller \
+		   -fprofile-correction
+
 KBUILD_AFLAGS_KERNEL :=
 ifdef CCONFIG_CC_OPTIMIZE_O3
  KBUILD_CFLAGS_KERNEL := -O3 -mtune=cortex-a9 -march=armv7-a -mfpu=neon \
-			     -ftree-vectorize -ftracer -fsched-pressure -fsched-spec-load
+			     -ftree-vectorize -ftracer -fsched-pressure -fsched-spec-load -fgcse-las \
+		             -ftree-loop-im -freorder-blocks-and-partition
 else
  KBUILD_CFLAGS_KERNEL := -O2 -mtune=cortex-a9 -march=armv7-a -mfpu=neon -ftree-vectorize
 endif
 
-ifdef CONFIG_OFAST_MATH
-KBUILD_CFLAGS := -Ofast -mtune=cortex-a9 -march=armv7-a -mfpu=neon -ftree-vectorize
+ifdef CONFIG_FFAST_MATH
+KBUILD_CFLAGS := -ffast-math -fno-trapping-math -fno-signed-zeros
 endif
 
 ifdef CONFIG_CC_GRAPHITE_OPTIMIZATION
@@ -409,7 +412,7 @@ KBUILD_CFLAGS        += -fgraphite-identity -floop-parallelize-all -floop-interc
 endif
 
 ifdef CONFIG_CC_LINK_TIME_OPTIMIZATION
-KBUILD_CFLAGS        += -flto -fno-toplevel-reorder -fno-fat-lto-objects -ftlo=2
+KBUILD_CFLAGS        += -flto -fno-toplevel-reorder -fno-fat-lto-objects -flto-compression-level=5 -fwhole-program
 endif
 
 KBUILD_AFLAGS   := -D__ASSEMBLY__
