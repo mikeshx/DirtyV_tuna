@@ -1030,6 +1030,13 @@ config CC_OPTIMIZE_O3
 
 endchoice
 
+
+config FFAST_MATH
+ 	bool "Use -ffast-math"
+	help
+	 Sets -fno-math-errno, -funsafe-math-optimizations, -ffinite-math-only, -fno-rounding-math,
+	 -fno-signaling-nans, -fno-trapping-math, -fno-signed-zeros, and -fcx-limited-range.
+
 config CC_GRAPHITE_OPTIMIZATION
         bool "Enable graphite optimizations"
         help
